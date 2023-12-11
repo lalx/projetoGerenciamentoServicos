@@ -9,6 +9,8 @@ export default class ChamadoDAO{
             let parametros = [chamado.dataChamado];
             const resultado = await conexao.execute(sql, parametros);
             chamado.id = resultado[0].insertId;
+
+            //não está funcionando
             for (const item of chamado.servicosChamados){
                 sql = `SELECT codigo FROM servicos WHERE categoria like ?`;
                 const [registros] = await conexao.execute(sql, ['%' + item.categoria + '%']);

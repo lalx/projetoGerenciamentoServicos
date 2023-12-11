@@ -51,7 +51,7 @@ export async function obterCardServicos(tipoCard = 'custom'){
             //card para messenger
             cartao = criarMessengerCard();
             cartao.title = servico.categoria;
-            cartao.card.subtitle = `prazo: ${servico.prazo} hora(s)`;
+            cartao.subtitle = `prazo: ${servico.prazo} hora(s)`;
             cartao.image.src.rawUrl = servico.urlImagem;
             cartao.actionLink = "https://www.ibm.com/br-pt/topics/service-desk";
         }

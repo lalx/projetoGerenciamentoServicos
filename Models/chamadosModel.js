@@ -8,11 +8,11 @@ export default class Chamado{
     constructor(id=0, dataChamado="", servicosChamados=[]){
         this.#id = id;
         this.dataChamado = dataChamado;
-        this.#servicosChamados = servicosChamados
+        this.#servicosChamados = servicosChamados;
     }
 
     get id(){
-        return this.#id
+        return this.#id;
     }
 
     set id(novoId){
@@ -20,7 +20,7 @@ export default class Chamado{
     }
 
     get dataChamado(){
-        return this.#dataChamado
+        return this.#dataChamado;
     }
 
     set dataChamado(novaData){
@@ -28,11 +28,11 @@ export default class Chamado{
     }
 
     get servicosChamados(){
-        return this.#servicosChamados
+        return this.#servicosChamados;
     }
 
-    set servicosChamados(novosItens){
-        this.#servicosChamados = novosItens
+    set servicosChamados(novosChamados){
+        this.#servicosChamados = novosChamados;
     }
 
     toJSON(){

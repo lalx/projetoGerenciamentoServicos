@@ -27,6 +27,7 @@ export default class DialogFlowController {
                         resDF.fulfillmentMessages.push({
                             "text": {
                                 "text": [
+                                    "Por problemas técnicos estamos com um atraso e todos suportes levará 6 horas para atendimento. Pedimos desculpas! \n",
                                     "Qual serviço necessita suporte?"
                                 ]
                             }
@@ -68,7 +69,7 @@ export default class DialogFlowController {
                         resDF.fulfillmentMessages[0].payload.richContent[0].push(...listaCards);
                         resDF.fulfillmentMessages[0].payload.richContent[0].push({
                             "type": "description",
-                            "title": "Qual serviço necessita suporte?",
+                            "title": "Por problemas técnicos estamos com um atraso e todos suportes levará 6 horas para atendimento. Pedimos desculpas! Qual serviço necessita suporte?",
                             "text": []
                         });
                         res.json(resDF);
@@ -92,13 +93,14 @@ export default class DialogFlowController {
                     })
                 }
             }
-            else if (intencao === "pedido-finalizado") {
+            else if (intencao === "pedidoFinalizado") {
                 let servicos = [];
                 let nomes = [];
                 let emails = [];
                 for (const contexto of req.body.queryResult.outputContexts) {
-                    console.log(contexto.parameters.categoria);
+                    
                     if (contexto.parameters.categoria) {
+
                         servicos = contexto.parameters.categoria;
                         //qtds = contexto.parameters.number; adaptar
                         nomes = contexto.parameters.person;
@@ -107,10 +109,10 @@ export default class DialogFlowController {
                 }
 
                 const dataHoje = new Date().toLocaleDateString();
-                let servicosChamado = [];
+                var servicosChamados = [];
                 for (let i = 0; i < servicos.length; i++) {
 
-                    servicosChamado.push({
+                    servicosChamados.push({
                         "codigo":0,
                         "categoria": servicos[i],
                         //"qtd": qtds[i]
@@ -119,11 +121,11 @@ export default class DialogFlowController {
                     });
 
                 }
-
-                const chamado = new Chamado(0, dataHoje, servicosChamado);
-                var sv = new Servicos();
-                sv = sv.consultar(servicosChamado.categoria);
-                const prazo = sv.prazo;
+                //consultar no banco o horario da categoria
+                /*var svT = new Servicos();
+                var pz = svT.consultar(servicosChamados[0].categoria);*/
+                const chamado = new Chamado(0, dataHoje, servicosChamados);
+                const prazo = 6;
 
                 chamado.gravar().then(() => {
                     if (origem) {
@@ -148,7 +150,7 @@ export default class DialogFlowController {
                             "payload": {
                                 "richContent": [[{
                                     "type": "description",
-                                    "title": `Nº do chamado gerado: ${chamado.id} \n`,
+                                    "title": `Nº do chamado gerado: 000${chamado.id} \n`,
                                     "text": [
                                         `Técnico responsável pelo atendimento: Glauco Junior \n`,
                                         `Prazo para atendimento: ${prazo} horas.`
@@ -159,41 +161,41 @@ export default class DialogFlowController {
                         res.json(resDF);
                     }
                 })
-                    .catch((erro) => {
-                        if (origem) {
-                            let resDF = {
-                                "fulfillmentMessages": [{
-                                    "text": {
-                                        "text": [
-                                            `Erro ao registrar o seu chamado! \n`,
-                                            `Erro: ${erro.message}`,
-                                            `Entre em contato pelo telefone (11) 99999-9999`,
-                                            `Agradecemos o seu contato!`
-                                        ]
-                                    }
-                                }]
-                            }
-                            res.json(resDF);
-                        }
-                        else {
-                            let resDF = {
-                                "fulfillmentMessages": []
-                            }
-                            resDF.fulfillmentMessages.push({
-                                "payload": {
-                                    "richContent": [[{
-                                        "type": "description",
-                                        "title": `Erro ao registrar o seu chamado! \n`,
-                                        "text": [
-                                            `Erro: ${erro.message}`,
-                                            `Entre em contato pelo telefone (11) 99999-9999`,
-                                            `Agradecemos o seu contato!`
-                                        ]
-                                    }]]
+                .catch((erro) => {
+                    if (origem) {
+                        let resDF = {
+                            "fulfillmentMessages": [{
+                                "text": {
+                                    "text": [
+                                        `Erro ao registrar o seu chamado! \n`,
+                                        `Erro: ${erro.message}`,
+                                        `Entre em contato pelo telefone (11) 99999-9999`,
+                                        `Agradecemos o seu contato!`
+                                    ]
                                 }
-                            });
+                            }]
                         }
-                    });
+                        res.json(resDF);
+                    }
+                    else {
+                        let resDF = {
+                            "fulfillmentMessages": []
+                        }
+                        resDF.fulfillmentMessages.push({
+                            "payload": {
+                                "richContent": [[{
+                                    "type": "description",
+                                    "title": `Erro ao registrar o seu chamado! \n`,
+                                    "text": [
+                                        `Erro: ${erro.message}`,
+                                        `Entre em contato pelo telefone (11) 99999-9999`,
+                                        `Agradecemos o seu contato!`
+                                    ]
+                                }]]
+                            }
+                        });
+                    }
+                });
             }
 
         }
